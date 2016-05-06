@@ -101,12 +101,14 @@ func AddLinks(c echo.Context, parameters []string) ([]Link, error) {
 		if match {
 			antiParameters := parameterRegex.Split(path, -1)
 
-			link := Link{
-				Rel:  swagger.Paths[path].Get.Summary,
-				HREF: MergeSort(antiParameters, parameters),
-			}
+			if swagger.Paths[path].Get != nil { // Make sure the matching path has a GET path
+				link := Link{
+					Rel:  swagger.Paths[path].Get.Summary,
+					HREF: MergeSort(antiParameters, parameters),
+				}
 
-			allLinks = append(allLinks, link)
+				allLinks = append(allLinks, link)
+			}
 		}
 	}
 

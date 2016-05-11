@@ -1,5 +1,5 @@
-# golang-hateoas
-[HATEOAS](http://timelessrepo.com/haters-gonna-hateoas) is awesome. A Go library to populate HATEOAS responses for RESTful APIs with proper Swagger documentation
+# hateoas
+[HATEOAS](http://timelessrepo.com/haters-gonna-hateoas) as a concept is awesome. A Go library to populate HATEOAS responses for RESTful APIs with proper Swagger documentation
 
 ### Requirements
 - [YAML](https://github.com/go-yaml/yaml/tree/v2)

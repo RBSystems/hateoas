@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/labstack/echo"
-
 	"gopkg.in/yaml.v2"
 )
 
@@ -76,9 +74,9 @@ func GetInfo() Root {
 	return returnStruct
 }
 
-func AddLinks(c echo.Context, parameters []string) ([]Link, error) {
+func AddLinks(path string, parameters []string) ([]Link, error) {
 	allLinks := []Link{}
-	contextPath := EchoToSwagger(c.Path())
+	contextPath := EchoToSwagger(path)
 	contextRegex := "" // Populate a few lines down
 
 	if contextPath != "/" {
@@ -95,15 +93,15 @@ func AddLinks(c echo.Context, parameters []string) ([]Link, error) {
 	hateoasRegex := regexp.MustCompile(contextRegex)
 	parameterRegex := regexp.MustCompile(`\{(.*?)\}`)
 
-	for path := range swagger.Paths {
-		match := hateoasRegex.MatchString(path)
+	for swaggerPaths := range swagger.Paths {
+		match := hateoasRegex.MatchString(swaggerPaths)
 
 		if match {
-			antiParameters := parameterRegex.Split(path, -1)
+			antiParameters := parameterRegex.Split(swaggerPaths, -1)
 
-			if swagger.Paths[path].Get != nil { // Make sure the matching path has a GET path
+			if swagger.Paths[swaggerPaths].Get != nil { // Make sure the matching path has a GET path
 				link := Link{
-					Rel:  swagger.Paths[path].Get.Summary,
+					Rel:  swagger.Paths[swaggerPaths].Get.Summary,
 					HREF: MergeSort(antiParameters, parameters),
 				}
 

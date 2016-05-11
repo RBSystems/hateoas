@@ -33,7 +33,7 @@ allBuildings.Buildings[i].Links = links
 ```
 
 ### Syntax
-`hateoas.AddLinks` takes two arguments. The first is a string representing the current HTTP path. The second is an array of strings specifying values for URL parameters used in the HTTP path. The strings will be used by `hateoas` to populate URLs for downstream endpoints.
+`hateoas.AddLinks` takes two arguments. The first is a string representing the current HTTP path (EG: `/endpoint/:variable`). The second is an array of strings specifying values for URL parameters used in the HTTP path. The strings will be used by `hateoas` to populate URLs for downstream endpoints.
 ```
 func AddLinks(path string, parameters []string) ([]Link, error) {
   ...

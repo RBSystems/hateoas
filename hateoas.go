@@ -6,10 +6,26 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/labstack/echo"
+
 	"gopkg.in/yaml.v2"
 )
 
 var swagger Swagger
+
+// RootResponse offers HATEOAS links from the root endpoint of the API
+func RootResponse(c echo.Context) error {
+	hateoasObject := GetInfo()
+
+	links, err := AddLinks(c.Path(), []string{})
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "An error occurred: "+err.Error())
+	}
+
+	hateoasObject.Links = links
+
+	return c.JSON(http.StatusOK, hateoasObject)
+}
 
 // MergeSort takes two string arrays and shuffles them together (there has to be a better way to do this)
 func MergeSort(first []string, second []string) string {

@@ -5,12 +5,27 @@
 - [YAML](https://github.com/go-yaml/yaml/tree/v2)
 
 ### Quickstart
+```
+import "github.com/byuoitav/hateoas"
+```
+
 In your main Go file (probably something like `server.go`), load your Swagger YAML file into the HATEOAS library:
 ```
 err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/av-api/master/swagger.yaml")
 if err != nil {
 	fmt.Printf("Could not load swagger.yaml file. Error: %s", err.Error())
 	panic(err)
+}
+```
+
+```
+func main() {
+  port := ":8000"
+  e := echo.New()
+
+  e.Get("/", hateoas.RootResponse)
+
+  e.Run(fasthttp.New(port))
 }
 ```
 

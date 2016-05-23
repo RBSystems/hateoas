@@ -1,8 +1,9 @@
 # hateoas
 [HATEOAS](http://timelessrepo.com/haters-gonna-hateoas) as a concept is awesome. A Go library to populate HATEOAS responses for RESTful APIs with proper Swagger documentation
 
-### Requirements
+### Dependencies
 - [YAML](https://github.com/go-yaml/yaml/tree/v2)
+- [Echo](https://labstack.com/echo) (for `RootResponse`)
 
 ### Quickstart
 ```

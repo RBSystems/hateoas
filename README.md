@@ -14,8 +14,7 @@ In your main Go file (probably something like `server.go`), load your Swagger YA
 ```
 err := hateoas.Load("https://raw.githubusercontent.com/byuoitav/av-api/master/swagger.yaml")
 if err != nil {
-	fmt.Println("Could not load swagger.yaml file. Error: " + err.Error())
-	panic(err)
+	log.Fatalln("Could not load swagger.json file. Error: " + err.Error())
 }
 ```
 

@@ -1,7 +1,9 @@
 package hateoas
 
 import (
+	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -13,7 +15,7 @@ import (
 
 var swagger Swagger
 
-// RootResponse offers HATEOAS links from the root endpoint of the API
+// Root offers HATEOAS links from the root endpoint of the API
 func RootResponse(c echo.Context) error {
 	hateoasObject := GetInfo()
 
@@ -69,6 +71,14 @@ func Load(fileLocation string) error {
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
+	}
+
+	log.Printf("%+v", response.StatusCode)
+
+	log.Printf("Length: %+v - %+s", len(contents), contents)
+
+	if response.StatusCode != 200 {
+		return errors.New("Could not retrieve Swagger document")
 	}
 
 	err = yaml.Unmarshal(contents, &swagger)

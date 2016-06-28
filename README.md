@@ -1,4 +1,6 @@
 # hateoas
+[![CircleCI](https://img.shields.io/circleci/project/byuoitav/hateoas.svg)](https://circleci.com/gh/byuoitav/hateoas) [![Codecov](https://img.shields.io/codecov/c/github/byuoitav/hateoas.svg)](https://codecov.io/gh/byuoitav/hateoas) [![Apache 2 License](https://img.shields.io/hexpm/l/plug.svg)](https://raw.githubusercontent.com/byuoitav/hateoas/master/LICENSE)
+
 [HATEOAS](http://timelessrepo.com/haters-gonna-hateoas) as a concept is awesome. `hateoas` is Go package to populate HATEOAS responses for RESTful APIs with proper Swagger documentation.
 
 ### Dependencies

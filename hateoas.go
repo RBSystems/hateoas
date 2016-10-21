@@ -3,6 +3,7 @@ package hateoas
 import (
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -16,17 +17,17 @@ import (
 var swagger Swagger
 
 // RootResponse offers HATEOAS links from the root endpoint of the API
-func RootResponse(c echo.Context) error {
+func RootResponse(context echo.Context) error {
 	hateoasObject := GetInfo()
 
-	links, err := AddLinks(c.Path(), []string{})
+	links, err := AddLinks(context.Path(), []string{})
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "An error occurred: "+err.Error())
+		return context.JSON(http.StatusBadRequest, "An error occurred: "+err.Error())
 	}
 
-	hateoasObject.Links = links
+	hateoasObject.Links = links // Append the links to the full HATEOAS object that includes the general Swagger document information
 
-	return c.JSON(http.StatusOK, hateoasObject)
+	return context.JSON(http.StatusOK, hateoasObject)
 }
 
 // MergeSort takes two string arrays and shuffles them together (there has to be a better way to do this)
@@ -61,6 +62,7 @@ func EchoToSwagger(path string) string {
 	return MergeSort(antiParameters, parameters)
 }
 
+// Load loads a swagger.json file from an external URL
 func Load(fileLocation string) error {
 	response, err := http.Get(fileLocation)
 	if err != nil {
@@ -96,24 +98,27 @@ func GetInfo() Root {
 	return returnStruct
 }
 
+// AddLinks searches through given paths
 func AddLinks(path string, parameters []string) ([]Link, error) {
 	allLinks := []Link{}
 	contextPath := EchoToSwagger(path)
-	contextRegex := "" // Populate a few lines down
+	contextRegex := "" // We populate this a few lines down from here
 
-	if contextPath != "/" {
-		// Make the path regex friendly
+	if contextPath != "/" { // If we're dealing with a path that's not the root URL...
+		// Make the path regex friendly by escaping / { and } characters
 		contextPath = strings.Replace(contextPath, "/", `\/`, -1)
 		contextPath = strings.Replace(contextPath, "{", `\{`, -1)
 		contextPath = strings.Replace(contextPath, "}", `\}`, -1)
 
-		contextRegex = `^` + contextPath + `\/[a-zA-Z{}]*$`
+		contextRegex = `^` + contextPath + `\/[a-zA-Z{}]*$` // Append the usual regular exptression for finding dynamic arguments
 	} else {
 		contextRegex = `^\/[a-zA-Z{}]*$`
 	}
 
 	hateoasRegex := regexp.MustCompile(contextRegex)
 	parameterRegex := regexp.MustCompile(`\{(.*?)\}`)
+
+	log.Printf("%+v", swagger)
 
 	for swaggerPaths := range swagger.Paths {
 		match := hateoasRegex.MatchString(swaggerPaths)
@@ -128,6 +133,8 @@ func AddLinks(path string, parameters []string) ([]Link, error) {
 				}
 
 				allLinks = append(allLinks, link)
+
+				log.Printf("%+V", allLinks)
 			}
 		}
 	}

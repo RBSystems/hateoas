@@ -5,7 +5,6 @@
 
 ### Dependencies
 - [YAML](https://github.com/go-yaml/yaml/tree/v2)
-- [Echo](https://labstack.com/echo) (for `RootResponse`)
 
 ### Quickstart
 ```
@@ -22,12 +21,12 @@ if err != nil {
 
 ```
 func main() {
-  port := ":8000"
-  e := echo.New()
+	port := ":8000"
+	router := echo.New()
 
-  e.Get("/", hateoas.RootResponse)
+	router.GET("/", echo.WrapHandler(http.HandlerFunc(hateoas.RootResponse)))
 
-  e.Run(fasthttp.New(port))
+	router.Start(port)
 }
 ```
 
@@ -53,6 +52,6 @@ allBuildings.Buildings[i].Links = links
 `hateoas.AddLinks` takes two arguments. The first is a string representing the current HTTP path (EG: `/endpoint/:variable`). The second is an array of strings specifying values for URL parameters used in the HTTP path. The strings will be used by `hateoas` to populate URLs for downstream endpoints.
 ```
 func AddLinks(path string, parameters []string) ([]Link, error) {
-  ...
+	...
 }
 ```

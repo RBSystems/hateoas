@@ -1,15 +1,15 @@
 package hateoas
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/labstack/echo"
+	"github.com/jessemillar/jsonresp"
 
 	"gopkg.in/yaml.v2"
 )
@@ -17,17 +17,24 @@ import (
 var swagger Swagger
 
 // RootResponse offers HATEOAS links from the root endpoint of the API
-func RootResponse(context echo.Context) error {
+func RootResponse(writer http.ResponseWriter, request *http.Request) {
 	hateoasObject := GetInfo()
 
-	links, err := AddLinks(context.Path(), []string{})
+	links, err := AddLinks(request.URL.Path, []string{})
 	if err != nil {
-		return context.JSON(http.StatusBadRequest, "An error occurred: "+err.Error())
+		jsonresp.New(writer, http.StatusBadRequest, "An error occurred: "+err.Error())
 	}
 
 	hateoasObject.Links = links // Append the links to the full HATEOAS object that includes the general Swagger document information
 
-	return context.JSON(http.StatusOK, hateoasObject)
+	response, err := json.Marshal(hateoasObject)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write(response)
 }
 
 // MergeSort takes two string arrays and shuffles them together (there has to be a better way to do this)
@@ -118,8 +125,6 @@ func AddLinks(path string, parameters []string) ([]Link, error) {
 	hateoasRegex := regexp.MustCompile(contextRegex)
 	parameterRegex := regexp.MustCompile(`\{(.*?)\}`)
 
-	log.Printf("%+v", swagger)
-
 	for swaggerPaths := range swagger.Paths {
 		match := hateoasRegex.MatchString(swaggerPaths)
 
@@ -133,8 +138,6 @@ func AddLinks(path string, parameters []string) ([]Link, error) {
 				}
 
 				allLinks = append(allLinks, link)
-
-				log.Printf("%+V", allLinks)
 			}
 		}
 	}

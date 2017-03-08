@@ -1,0 +1,7 @@
+dependencies:
+    post:
+        - rm -r ~/.gradle || true
+
+test:
+    override:
+        - go test -v -race $(go list ./... | grep -v /vendor/)
